@@ -9,9 +9,7 @@ const getProductList: ValidatedEventAPIGatewayProxyEvent<
   typeof schema
 > = async () => {
   return formatJSONResponse({
-    body: {
-      products: PRODUCTS_MOCK,
-    },
+    products: PRODUCTS_MOCK,
   });
 };
 
