@@ -1,0 +1,44 @@
+{
+  "stocks": [
+    {
+      "PutRequest": {
+        "Item": {
+          "product_id": { "S": "0" },
+          "count": { "N": "5" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "product_id": { "S": "1" },
+          "count": { "N": "7" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "product_id": { "S": "2" },
+          "count": { "N": "9" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "product_id": { "S": "3" },
+          "count": { "N": "11" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "product_id": { "S": "4" },
+          "count": { "N": "13" }
+        }
+      }
+    }
+  ]
+}

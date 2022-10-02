@@ -1,0 +1,64 @@
+{
+  "products": [
+    {
+      "PutRequest": {
+        "Item": {
+          "id": { "S": "0" },
+          "title": { "S": "Reg" },
+          "description": {
+            "S": "From Made in Abyss, a figure of Reg is here."
+          },
+          "price": { "N": "1200" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "id": { "S": "1" },
+          "title": { "S": "Nanachi" },
+          "description": {
+            "S": "From Made in Abyss, a figure of Nanachi is here."
+          },
+          "price": { "N": "1200" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "id": { "S": "2" },
+          "title": { "S": "Mitty" },
+          "description": {
+            "S": "From Made in Abyss, a figure of Mitty is here."
+          },
+          "price": { "N": "1200" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "id": { "S": "3" },
+          "title": { "S": "Riko" },
+          "description": {
+            "S": "From Made in Abyss, a figure of Riko is here."
+          },
+          "price": { "N": "1200" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "id": { "S": "4" },
+          "title": { "S": "Prushka" },
+          "description": {
+            "S": "From Made in Abyss, a figure of Prushka is here."
+          },
+          "price": { "N": "1200" }
+        }
+      }
+    }
+  ]
+}
