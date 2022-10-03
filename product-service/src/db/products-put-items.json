@@ -3,7 +3,7 @@
     {
       "PutRequest": {
         "Item": {
-          "id": { "S": "0" },
+          "id": { "S": "1bdd8439-e75b-4142-822b-7529739df76f" },
           "title": { "S": "Reg" },
           "description": {
             "S": "From Made in Abyss, a figure of Reg is here."
@@ -15,7 +15,7 @@
     {
       "PutRequest": {
         "Item": {
-          "id": { "S": "1" },
+          "id": { "S": "d6c7ff19-be0b-41df-ba09-9901b11a5f0b" },
           "title": { "S": "Nanachi" },
           "description": {
             "S": "From Made in Abyss, a figure of Nanachi is here."
@@ -27,7 +27,7 @@
     {
       "PutRequest": {
         "Item": {
-          "id": { "S": "2" },
+          "id": { "S": "4b96bcf5-5390-4f6f-8067-3577ed06f130" },
           "title": { "S": "Mitty" },
           "description": {
             "S": "From Made in Abyss, a figure of Mitty is here."
@@ -39,7 +39,7 @@
     {
       "PutRequest": {
         "Item": {
-          "id": { "S": "3" },
+          "id": { "S": "8828a6ae-0210-4a1c-9454-da896b54631f" },
           "title": { "S": "Riko" },
           "description": {
             "S": "From Made in Abyss, a figure of Riko is here."
@@ -51,7 +51,7 @@
     {
       "PutRequest": {
         "Item": {
-          "id": { "S": "4" },
+          "id": { "S": "2495c646-c4d9-4bc3-9a59-0753d6f83ced" },
           "title": { "S": "Prushka" },
           "description": {
             "S": "From Made in Abyss, a figure of Prushka is here."
