@@ -10,17 +10,5 @@ export default {
         cors: true,
       },
     },
-    // {
-    //   s3: {
-    //     bucket: "${self:custom.bucketName}",
-    //     event: "s3:ObjectCreated:*",
-    //     rules: [
-    //       {
-    //         prefix: process.env.CATALOG_PREFIX,
-    //       },
-    //     ],
-    //     existing: true,
-    //   },
-    // },
   ],
 };
