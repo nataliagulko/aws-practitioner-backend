@@ -14,6 +14,7 @@ const getSignedURL = async (
     Bucket: bucket,
     Key: `${process.env.CATALOG_PREFIX}${fileName}`,
     Expires: expirySeconds,
+    ContentType: "text/csv",
   });
 };
 
