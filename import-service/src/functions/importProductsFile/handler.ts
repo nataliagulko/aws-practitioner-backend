@@ -1,6 +1,7 @@
 import { middyfy } from "@libs/lambda";
 import { APIGatewayEvent } from "aws-lambda";
 import * as AWS from "aws-sdk";
+import { formatJSONResponse } from "../../libs/api-gateway";
 
 const s3Client = new AWS.S3();
 
@@ -17,11 +18,14 @@ const getSignedURL = async (
 };
 
 const importProductsFile = async (event: APIGatewayEvent) => {
-  const name = String(event.pathParameters.name);
-  console.log("importProductsFile name", name);
-  const url = await getSignedURL(process.env.IMPORT_BUCKET, name, 3600);
-  console.log("importProductsFile url", url);
-  return url;
+  console.log("importProductsFile event", event);
+  const name: string | undefined = event.queryStringParameters?.name;
+  if (name) {
+    const url = await getSignedURL(process.env.IMPORT_BUCKET, name, 60);
+    return formatJSONResponse({ url });
+  }
+
+  return formatJSONResponse({ message: "File name was not provided" });
 };
 
 export const main = middyfy(importProductsFile);

@@ -21,18 +21,22 @@ const serverlessConfiguration: AWS = {
       IMPORT_BUCKET: "${self:custom.bucketName}",
       CATALOG_PREFIX: "uploaded/",
     },
-    iamRoleStatements: [
-      {
-        Effect: "Allow",
-        Action: "s3:ListBucket",
-        Resource: "arn:aws:s3:::${self:custom.bucketName}",
+    iam: {
+      role: {
+        statements: [
+          {
+            Effect: "Allow",
+            Action: "s3:ListBucket",
+            Resource: "arn:aws:s3:::${self:custom.bucketName}",
+          },
+          {
+            Effect: "Allow",
+            Action: "s3:*",
+            Resource: "arn:aws:s3:::${self:custom.bucketName}/*",
+          },
+        ],
       },
-      {
-        Effect: "Allow",
-        Action: "s3:*",
-        Resource: "arn:aws:s3:::${self:custom.bucketName}/*",
-      },
-    ],
+    },
   },
   // import the function via paths
   functions: { importProductsFile },
