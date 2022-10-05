@@ -20,7 +20,8 @@ const serverlessConfiguration: AWS = {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
       NODE_OPTIONS: "--enable-source-maps --stack-trace-limit=1000",
       IMPORT_BUCKET: "${self:custom.bucketName}",
-      CATALOG_PREFIX: "uploaded/",
+      CATALOG_PREFIX: "${self:custom.catalogPath}",
+      PARSED_CATALOG_PREFIX: "${self:custom.parsedCatalogPath}",
     },
     iam: {
       role: {
@@ -54,6 +55,8 @@ const serverlessConfiguration: AWS = {
       concurrency: 10,
     },
     bucketName: "made-in-abyss-import",
+    catalogPath: "uploaded/",
+    parsedCatalogPath: "parsed/",
   },
 };
 

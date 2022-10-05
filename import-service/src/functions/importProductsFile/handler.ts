@@ -1,7 +1,7 @@
 import { middyfy } from "@libs/lambda";
 import { APIGatewayEvent } from "aws-lambda";
-import * as AWS from "aws-sdk";
 import { formatJSONResponse } from "../../libs/api-gateway";
+import * as AWS from "aws-sdk";
 
 const s3Client = new AWS.S3();
 

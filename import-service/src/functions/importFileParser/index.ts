@@ -9,7 +9,7 @@ export default {
         event: "s3:ObjectCreated:*",
         rules: [
           {
-            prefix: process.env.CATALOG_PREFIX,
+            prefix: "${self:custom.catalogPath}",
           },
         ],
         existing: true,
