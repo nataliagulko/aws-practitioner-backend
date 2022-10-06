@@ -3,6 +3,7 @@ import { SQSEvent } from "aws-lambda";
 import { formatJSONResponse } from "@libs/api-gateway";
 import { log } from "@utils/log";
 import * as AWS from "aws-sdk";
+import { InvocationRequest } from "aws-sdk/clients/lambda";
 
 const catalogBatchProcess = async (event: SQSEvent) => {
   log(event);
@@ -12,20 +13,20 @@ const catalogBatchProcess = async (event: SQSEvent) => {
 
   try {
     for (const record of records) {
-      var params = {
+      var params: InvocationRequest = {
         FunctionName: `${process.env.FUNCTION_PREFIX}-createProduct`,
         InvocationType: "Event",
         LogType: "Tail",
-        Payload: record,
+        Payload: JSON.stringify(record),
       };
 
-      // TODO: product creation not working 
-      // console.log("BATCH", params);
-      const result = await lambda
-        .invoke(params)
+      await lambda
+        .invoke(params, function (error) {
+          if (error) {
+            throw error;
+          }
+        })
         .promise();
-
-      // console.log("RESULT", result);
     }
   } catch (error) {
     return formatJSONResponse({ error });

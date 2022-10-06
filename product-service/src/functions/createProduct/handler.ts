@@ -27,9 +27,10 @@ const putStockProduct = async (stockProduct: Stock) =>
 
 const createProduct = async (event: APIGatewayProxyEvent) => {
   log(event);
+
   try {
     const productId = v4();
-    const body = event.body as any;
+    const body = JSON.parse(event.body as any);
 
     const product: Product = {
       id: productId,
@@ -44,11 +45,15 @@ const createProduct = async (event: APIGatewayProxyEvent) => {
 
     await putProduct(product);
     await putStockProduct(stockProduct);
+
     return formatJSONResponse({ id: productId });
   } catch (error) {
-    return formatJSONResponse({
-      message: error,
-    }, 500);
+    return formatJSONResponse(
+      {
+        message: error,
+      },
+      500
+    );
   }
 };
 
