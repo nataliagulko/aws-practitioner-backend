@@ -1,7 +1,8 @@
 import { middyfy } from "@libs/lambda";
-import { SQSEvent, SQSRecord } from "aws-lambda";
+import { SQSEvent } from "aws-lambda";
 import { formatJSONResponse } from "@libs/api-gateway";
 import { log } from "@utils/log";
+import { isValidJSON } from "@utils/parse";
 import * as AWS from "aws-sdk";
 import { InvocationRequest } from "aws-sdk/clients/lambda";
 
@@ -16,7 +17,7 @@ const sendNotification = async (count: number) => {
           Message: ` ${count} products were created`,
           TopicArn: process.env.SNS_ARN,
         },
-        (error, data) => {
+        (error) => {
           if (error) {
             throw error;
           }
@@ -28,38 +29,34 @@ const sendNotification = async (count: number) => {
   }
 };
 
-const createProducts = async (records: SQSRecord[]) => {
+const catalogBatchProcess = async (event: SQSEvent) => {
+  log(event);
+
   const lambda = new AWS.Lambda();
+  const records = event.Records;
 
   try {
     for (const record of records) {
-      var params: InvocationRequest = {
+      const params: InvocationRequest = {
         FunctionName: `${process.env.FUNCTION_PREFIX}-createProduct`,
         InvocationType: "Event",
         LogType: "Tail",
-        Payload: JSON.stringify(record),
+        Payload: isValidJSON(record) ? record : JSON.stringify(record),
       };
 
       await lambda
-        .invoke(params, function (error) {
+        .invoke(params, async (error) => {
           if (error) {
             throw error;
           }
+
+          await sendNotification(records.length);
         })
         .promise();
     }
   } catch (error) {
     return formatJSONResponse({ error });
   }
-};
-
-const catalogBatchProcess = async (event: SQSEvent) => {
-  log(event);
-
-  const records = event.Records;
-
-  await createProducts(records);
-  await sendNotification(records.length);
 
   return formatJSONResponse({ message: "Completed successfully" });
 };

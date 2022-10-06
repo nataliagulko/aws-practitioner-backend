@@ -6,6 +6,7 @@ import Stock from "@models/stock";
 import { APIGatewayProxyEvent } from "aws-lambda";
 import { v4 } from "uuid";
 import { log } from "@utils/log";
+import { isValidJSON } from "@utils/parse";
 
 const db = new AWS.DynamoDB.DocumentClient();
 
@@ -30,7 +31,9 @@ const createProduct = async (event: APIGatewayProxyEvent) => {
 
   try {
     const productId = v4();
-    const body = JSON.parse(event.body as any);
+    const body: any = isValidJSON(event.body)
+      ? event.body
+      : JSON.stringify(event.body);
 
     const product: Product = {
       id: productId,
