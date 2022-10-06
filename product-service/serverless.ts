@@ -23,6 +23,18 @@ const serverlessConfiguration: AWS = {
       NODE_OPTIONS: "--enable-source-maps --stack-trace-limit=1000",
       PRODUCTS_TABLE_NAME: "products",
       STOCKS_TABLE_NAME: "stocks",
+      FUNCTION_PREFIX: "${self:service}-${self:provider.stage}",
+    },
+    iam: {
+      role: {
+        statements: [
+          {
+            Effect: "Allow",
+            Action: ["lambda:InvokeFunction", "lambda:InvokeAsync"],
+            Resource: "*",
+          },
+        ],
+      },
     },
   },
   // import the function via paths
