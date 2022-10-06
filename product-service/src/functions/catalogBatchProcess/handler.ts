@@ -1,14 +1,34 @@
 import { middyfy } from "@libs/lambda";
-import { SQSEvent } from "aws-lambda";
+import { SQSEvent, SQSRecord } from "aws-lambda";
 import { formatJSONResponse } from "@libs/api-gateway";
 import { log } from "@utils/log";
 import * as AWS from "aws-sdk";
 import { InvocationRequest } from "aws-sdk/clients/lambda";
 
-const catalogBatchProcess = async (event: SQSEvent) => {
-  log(event);
-  const records = event.Records;
+const sendNotification = async (count: number) => {
+  const sns = new AWS.SNS();
 
+  try {
+    await sns
+      .publish(
+        {
+          Subject: "Product creation succeed",
+          Message: ` ${count} products were created`,
+          TopicArn: process.env.SNS_ARN,
+        },
+        (error, data) => {
+          if (error) {
+            throw error;
+          }
+        }
+      )
+      .promise();
+  } catch (error) {
+    return formatJSONResponse({ error });
+  }
+};
+
+const createProducts = async (records: SQSRecord[]) => {
   const lambda = new AWS.Lambda();
 
   try {
@@ -31,8 +51,17 @@ const catalogBatchProcess = async (event: SQSEvent) => {
   } catch (error) {
     return formatJSONResponse({ error });
   }
+};
 
-  return formatJSONResponse({ messages: "Done" });
+const catalogBatchProcess = async (event: SQSEvent) => {
+  log(event);
+
+  const records = event.Records;
+
+  await createProducts(records);
+  await sendNotification(records.length);
+
+  return formatJSONResponse({ message: "Completed successfully" });
 };
 
 export const main = middyfy(catalogBatchProcess);

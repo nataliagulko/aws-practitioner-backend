@@ -24,6 +24,9 @@ const serverlessConfiguration: AWS = {
       PRODUCTS_TABLE_NAME: "products",
       STOCKS_TABLE_NAME: "stocks",
       FUNCTION_PREFIX: "${self:service}-${self:provider.stage}",
+      SNS_ARN: {
+        Ref: "SNSTopic",
+      },
     },
     iam: {
       role: {
@@ -33,7 +36,32 @@ const serverlessConfiguration: AWS = {
             Action: ["lambda:InvokeFunction", "lambda:InvokeAsync"],
             Resource: "*",
           },
+          {
+            Effect: "Allow",
+            Action: ["sns:*"],
+            Resource: {
+              Ref: "SNSTopic",
+            },
+          },
         ],
+      },
+    },
+  },
+  resources: {
+    Resources: {
+      SNSTopic: {
+        Type: "AWS::SNS::Topic",
+        Properties: { TopicName: "createProductTopic" },
+      },
+      SNSSubscription: {
+        Type: "AWS::SNS::Subscription",
+        Properties: {
+          Endpoint: "natalia_gulko1@epam.com",
+          Protocol: "email",
+          TopicArn: {
+            Ref: "SNSTopic",
+          },
+        },
       },
     },
   },
