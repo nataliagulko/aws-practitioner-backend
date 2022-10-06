@@ -5,6 +5,7 @@ import Product from "@models/product";
 import Stock from "@models/stock";
 import { APIGatewayProxyEvent } from "aws-lambda";
 import { v4 } from "uuid";
+import { log } from "@utils/log";
 
 const db = new AWS.DynamoDB.DocumentClient();
 
@@ -25,7 +26,7 @@ const putStockProduct = async (stockProduct: Stock) =>
     .promise();
 
 const createProduct = async (event: APIGatewayProxyEvent) => {
-  console.log("Input event:\n", event);
+  log(event);
   try {
     const productId = v4();
     const body = event.body as any;

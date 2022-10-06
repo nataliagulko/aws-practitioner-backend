@@ -23,28 +23,6 @@ const serverlessConfiguration: AWS = {
       NODE_OPTIONS: "--enable-source-maps --stack-trace-limit=1000",
       PRODUCTS_TABLE_NAME: "products",
       STOCKS_TABLE_NAME: "stocks",
-      SQS_URL: { Ref: "SQSQueue" },
-    },
-    iam: {
-      role: {
-        statements: [
-          {
-            Effect: "Allow",
-            Action: ["sqs:*"],
-            Resource: { "Fn::GetAtt": ["SQSQueue", "Arn"] },
-          },
-        ],
-      },
-    },
-  },
-  resources: {
-    Resources: {
-      SQSQueue: {
-        Type: "AWS::SQS::Queue",
-        Properties: {
-          QueueName: "catalogItemsQueue",
-        },
-      },
     },
   },
   // import the function via paths

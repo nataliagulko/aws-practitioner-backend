@@ -1,30 +1,19 @@
 import { middyfy } from "@libs/lambda";
-import { APIGatewayProxyHandler } from "aws-lambda";
+import { SQSEvent } from "aws-lambda";
 import { formatJSONResponse } from "@libs/api-gateway";
-import * as AWS from "aws-sdk";
 import { log } from "@utils/log";
 
-const catalogBatchProcess: APIGatewayProxyHandler = async (event) => {
+const catalogBatchProcess = async (event: SQSEvent) => {
   log(event);
-  const sqs = new AWS.SQS();
-  const messages = event.body;
 
-  console.log(messages);
+  const records = event.Records;
 
   try {
-    // sqs.sendMessage(
-    //   {
-    //     QueueUrl: process.env.SQS_URL,
-    //     MessageBody: messages,
-    //   },
-    //   (error) => {
-    //     if (error) {
-    //       throw error;
-    //     }
-    //   }
-    // );
+    for (const record of records) {
+      console.log("Message Body -->  ", record.body);
+    }
   } catch (error) {
-    return formatJSONResponse({ messages: error });
+    return formatJSONResponse({ error });
   }
 
   return formatJSONResponse({ messages: "Done" });
