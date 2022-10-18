@@ -1,20 +1,20 @@
-import { formatJSONResponse } from "@libs/api-gateway";
 import { middyfy } from "@libs/lambda";
 import { log } from "@utils/log";
 import {
   APIGatewayAuthorizerResult,
-  APIGatewayTokenAuthorizerEvent,
+  APIGatewayTokenAuthorizerHandler,
 } from "aws-lambda";
 
-const basicAuthorizer = async (
-  event: APIGatewayTokenAuthorizerEvent,
+const basicAuthorizer: APIGatewayTokenAuthorizerHandler = (
+  event,
   _,
-  cb
+  callback
 ) => {
   log(event);
+  console.log("callback", callback);
 
   if (event.type !== "TOKEN") {
-    cb("Unauthorized");
+    callback("Unauthorized");
   }
 
   try {
@@ -22,8 +22,6 @@ const basicAuthorizer = async (
     var [username, password] = Buffer.from(credentials, "base64")
       .toString("utf-8")
       .split(":");
-
-    console.log("USERNAME", username);
 
     const storedPassword = process.env[username];
     const effect =
@@ -42,9 +40,9 @@ const basicAuthorizer = async (
       },
     };
 
-    cb(null, policy);
+    callback(null, policy);
   } catch (error) {
-    cb("Unauthorized");
+    callback("Unauthorized");
   }
 };
 

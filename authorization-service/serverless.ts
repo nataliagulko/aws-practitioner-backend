@@ -21,21 +21,21 @@ const serverlessConfiguration: AWS = {
       nataliagulko: "TEST_PASSWORD",
     },
   },
-  resources: {
-    Resources: {
-      Unauthorized: {
-        Type: "AWS::ApiGateway::GatewayResponse",
-        Properties: {
-          ResponseParameters: {
-            "gatewayresponse.header.Access-Control-Allow-Origin": "'*'",
-            "gatewayresponse.header.Access-Control-Allow-Headers": "'*'",
-          },
-          ResponseType: "DEFAULT_4XX",
-          RestApiId: { Ref: "ApiGatewayRestApi" },
-        },
-      },
-    },
-  },
+  // resources: {
+  //   Resources: {
+  //     Unauthorized: {
+  //       Type: "AWS::ApiGateway::GatewayResponse",
+  //       Properties: {
+  //         ResponseParameters: {
+  //           "gatewayresponse.header.Access-Control-Allow-Origin": "'*'",
+  //           "gatewayresponse.header.Access-Control-Allow-Headers": "'*'",
+  //         },
+  //         ResponseType: "DEFAULT_4XX",
+  //         RestApiId: { Ref: "ApiGatewayRestApi" },
+  //       },
+  //     },
+  //   },
+  // },
   // import the function via paths
   functions: { basicAuthorizer },
   package: { individually: true },
