@@ -1,11 +1,11 @@
 import type { AWS } from "@serverless/typescript";
 
-import basicAuthorizer from "@functions/basicAuthorizer";
+import { protectedFn, basicAuthorizer } from "./src/functions";
 
 const serverlessConfiguration: AWS = {
   service: "authorization-service",
   frameworkVersion: "3",
-  plugins: ["serverless-esbuild"],
+  plugins: ["serverless-esbuild", "serverless-offline"],
   provider: {
     name: "aws",
     runtime: "nodejs14.x",
@@ -21,23 +21,23 @@ const serverlessConfiguration: AWS = {
       nataliagulko: "TEST_PASSWORD",
     },
   },
-  // resources: {
-  //   Resources: {
-  //     Unauthorized: {
-  //       Type: "AWS::ApiGateway::GatewayResponse",
-  //       Properties: {
-  //         ResponseParameters: {
-  //           "gatewayresponse.header.Access-Control-Allow-Origin": "'*'",
-  //           "gatewayresponse.header.Access-Control-Allow-Headers": "'*'",
-  //         },
-  //         ResponseType: "DEFAULT_4XX",
-  //         RestApiId: { Ref: "ApiGatewayRestApi" },
-  //       },
-  //     },
-  //   },
-  // },
+  resources: {
+    Resources: {
+      Unauthorized: {
+        Type: "AWS::ApiGateway::GatewayResponse",
+        Properties: {
+          ResponseParameters: {
+            "gatewayresponse.header.Access-Control-Allow-Origin": "'*'",
+            "gatewayresponse.header.Access-Control-Allow-Headers": "'*'",
+          },
+          ResponseType: "DEFAULT_4XX",
+          RestApiId: { Ref: "ApiGatewayRestApi" },
+        },
+      },
+    },
+  },
   // import the function via paths
-  functions: { basicAuthorizer },
+  functions: { basicAuthorizer, protectedFn },
   package: { individually: true },
   custom: {
     esbuild: {

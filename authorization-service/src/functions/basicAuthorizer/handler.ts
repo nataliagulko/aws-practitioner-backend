@@ -1,20 +1,15 @@
 import { middyfy } from "@libs/lambda";
 import { log } from "@utils/log";
 import {
+  APIGatewayAuthorizerHandler,
   APIGatewayAuthorizerResult,
-  APIGatewayTokenAuthorizerHandler,
 } from "aws-lambda";
 
-const basicAuthorizer: APIGatewayTokenAuthorizerHandler = (
-  event,
-  _,
-  callback
-) => {
+const basicAuthorizer: APIGatewayAuthorizerHandler = async (event) => {
   log(event);
-  console.log("callback", callback);
 
   if (event.type !== "TOKEN") {
-    callback("Unauthorized");
+    throw new Error("Unauthorized");
   }
 
   try {
@@ -40,9 +35,9 @@ const basicAuthorizer: APIGatewayTokenAuthorizerHandler = (
       },
     };
 
-    callback(null, policy);
+    return policy;
   } catch (error) {
-    callback("Unauthorized");
+    throw new Error("Unauthorized");
   }
 };
 
