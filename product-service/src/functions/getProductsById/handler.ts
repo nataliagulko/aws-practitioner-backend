@@ -41,6 +41,9 @@ const getProductsById = async (event: APIGatewayEvent) => {
   } catch (error) {
     return formatJSONResponse({ message: error });
   }
+  finally {
+    await client.end();
+  }
 };
 
 export const main = middyfy(getProductsById);
