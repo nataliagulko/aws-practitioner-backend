@@ -1,34 +1,41 @@
 import { formatJSONResponse } from "@libs/api-gateway";
 import { middyfy } from "@libs/lambda";
-import * as AWS from "aws-sdk";
+import { Client, ClientConfig } from "pg";
 
-const db = new AWS.DynamoDB.DocumentClient();
+const { PG_HOST, PG_PORT, PG_DATABASE, PG_USERNAME, PG_PASSWORD } = process.env;
 
-const scanProducts = async () =>
-  await db
-    .scan({
-      TableName: process.env.PRODUCTS_TABLE_NAME,
-    })
-    .promise();
-
-const scanStocks = async () =>
-  await db
-    .scan({
-      TableName: process.env.STOCKS_TABLE_NAME,
-    })
-    .promise();
+const dbOptions: ClientConfig = {
+  host: PG_HOST,
+  port: Number(PG_PORT),
+  database: PG_DATABASE,
+  user: PG_USERNAME,
+  password: PG_PASSWORD,
+  ssl: {
+    rejectUnauthorized: false,
+  },
+  connectionTimeoutMillis: 5000,
+};
 
 const getProductList = async () => {
-  const { Items: products = [] } = await scanProducts();
-  const { Items: stocks = [] } = await scanStocks();
-  const result = products?.map((p) => ({
-    ...p,
-    count: stocks?.find((s) => s.product_id === p.id)?.count || 0,
-  }));
+  const productsTableName = process.env.PRODUCTS_TABLE_NAME;
+  const stocksTableName = process.env.STOCKS_TABLE_NAME;
+  const client = new Client(dbOptions);
 
-  return formatJSONResponse({
-    products: result,
-  });
+  await client.connect();
+
+  try {
+    const { rows: productItems } = await client.query(`
+      select p.id, p.title, p.description, p.price, s.count
+      from ${productsTableName} p
+      join ${stocksTableName} s
+      on p.id = s.product_id
+    `);
+    return formatJSONResponse({ products: productItems });
+  } catch (error) {
+    return formatJSONResponse({ message: error });
+  } finally {
+    await client.end();
+  }
 };
 
 export const main = middyfy(getProductList);
