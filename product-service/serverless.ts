@@ -2,6 +2,7 @@ import type { AWS } from "@serverless/typescript";
 
 import products from "@functions/getProductsList";
 import productsById from "@functions/getProductsById";
+import createProduct from "@functions/createProduct";
 
 const serverlessConfiguration: AWS = {
   service: "product-service",
@@ -19,10 +20,12 @@ const serverlessConfiguration: AWS = {
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
       NODE_OPTIONS: "--enable-source-maps --stack-trace-limit=1000",
+      PRODUCTS_TABLE_NAME: "products",
+      STOCKS_TABLE_NAME: "stocks",
     },
   },
   // import the function via paths
-  functions: { products, productsById },
+  functions: { products, productsById, createProduct },
   package: { individually: true },
   custom: {
     esbuild: {
