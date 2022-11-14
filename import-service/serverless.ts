@@ -22,6 +22,7 @@ const serverlessConfiguration: AWS = {
       IMPORT_BUCKET: "${self:custom.bucketName}",
       CATALOG_PREFIX: "${self:custom.catalogPath}",
       PARSED_CATALOG_PREFIX: "${self:custom.parsedCatalogPath}",
+      SQS_URL: { Ref: "SQSQueue" },
     },
     iam: {
       role: {
@@ -36,7 +37,22 @@ const serverlessConfiguration: AWS = {
             Action: ["s3:*"],
             Resource: "arn:aws:s3:::${self:custom.bucketName}/*",
           },
+          {
+            Effect: "Allow",
+            Action: ["sqs:*"],
+            Resource: { "Fn::GetAtt": ["SQSQueue", "Arn"] },
+          },
         ],
+      },
+    },
+  },
+  resources: {
+    Resources: {
+      SQSQueue: {
+        Type: "AWS::SQS::Queue",
+        Properties: {
+          QueueName: "catalogItemsQueue",
+        },
       },
     },
   },

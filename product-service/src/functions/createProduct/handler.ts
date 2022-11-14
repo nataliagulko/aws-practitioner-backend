@@ -5,6 +5,8 @@ import Product from "@models/product";
 import Stock from "@models/stock";
 import { APIGatewayProxyEvent } from "aws-lambda";
 import { v4 } from "uuid";
+import { log } from "@utils/log";
+import { isValidJSON } from "@utils/parse";
 
 const db = new AWS.DynamoDB.DocumentClient();
 
@@ -25,10 +27,13 @@ const putStockProduct = async (stockProduct: Stock) =>
     .promise();
 
 const createProduct = async (event: APIGatewayProxyEvent) => {
-  console.log("Input event:\n", event);
+  log(event);
+
   try {
     const productId = v4();
-    const body = event.body as any;
+    const body: any = isValidJSON(event.body)
+      ? event.body
+      : JSON.stringify(event.body);
 
     const product: Product = {
       id: productId,
@@ -43,11 +48,15 @@ const createProduct = async (event: APIGatewayProxyEvent) => {
 
     await putProduct(product);
     await putStockProduct(stockProduct);
+
     return formatJSONResponse({ id: productId });
   } catch (error) {
-    return formatJSONResponse({
-      message: error,
-    }, 500);
+    return formatJSONResponse(
+      {
+        message: error,
+      },
+      500
+    );
   }
 };
 

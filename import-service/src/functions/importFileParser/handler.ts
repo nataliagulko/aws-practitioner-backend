@@ -4,17 +4,43 @@ import { formatJSONResponse } from "../../libs/api-gateway";
 import * as AWS from "aws-sdk";
 import { log } from "@utils/log";
 import { parseStream } from "@fast-csv/parse";
+import Product from "@models/product";
 
 const s3Client = new AWS.S3();
 
-const readCsvFile = async (stream): Promise<void> =>
+const sendDataToQueue = async (product: Product) => {
+  const sqs = new AWS.SQS();
+
+  try {
+    await sqs
+      .sendMessage(
+        {
+          QueueUrl: process.env.SQS_URL,
+          MessageBody: JSON.stringify(product),
+        },
+        (error) => {
+          if (error) {
+            throw error;
+          }
+        }
+      )
+      .promise();
+  } catch (error) {
+    return formatJSONResponse({ messages: error });
+  }
+};
+
+const readCsvFile = async (stream) =>
   new Promise(() => {
     parseStream(stream, { headers: true })
       .on("data-invalid", (_, rowNumber, error) => {
         console.error(`Invalid batch row ${rowNumber}:`, error);
       })
-      .on("data", (data) => {
-        console.info("Data: " + JSON.stringify(data));
+      .on("data", async (line: Product) => {
+        if (line) {
+          console.info("Data: " + JSON.stringify(line));
+          await sendDataToQueue(line);
+        }
       })
       .on("end", () => {
         console.info("End of Stream");
