@@ -4,11 +4,14 @@ import products from "@functions/getProductsList";
 import productsById from "@functions/getProductsById";
 import createProduct from "@functions/createProduct";
 import catalogBatchProcess from "@functions/catalogBatchProcess";
+import * as dotenv from "dotenv";
+
+dotenv.config();
 
 const serverlessConfiguration: AWS = {
   service: "product-service",
   frameworkVersion: "3",
-  plugins: ["serverless-esbuild"],
+  plugins: ["serverless-esbuild", "serverless-offline"],
   provider: {
     name: "aws",
     runtime: "nodejs14.x",
@@ -27,6 +30,11 @@ const serverlessConfiguration: AWS = {
       SNS_ARN: {
         Ref: "SNSTopic",
       },
+      PG_HOST: "made-in-abyss.cozgbuzuobfe.eu-west-1.rds.amazonaws.com",
+      PG_PORT: "5432",
+      PG_DATABASE: "shop",
+      PG_USERNAME: process.env.DB_USERNAME,
+      PG_PASSWORD: process.env.DB_PASSWORD,
     },
     iam: {
       role: {
@@ -47,6 +55,7 @@ const serverlessConfiguration: AWS = {
       },
     },
   },
+  useDotenv: true,
   resources: {
     Resources: {
       SNSTopic: {
@@ -73,7 +82,7 @@ const serverlessConfiguration: AWS = {
       bundle: true,
       minify: false,
       sourcemap: true,
-      exclude: ["aws-sdk"],
+      exclude: ["aws-sdk", "pg-native"],
       target: "node14",
       define: { "require.resolve": undefined },
       platform: "node",
