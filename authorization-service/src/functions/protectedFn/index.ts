@@ -6,12 +6,10 @@ export default {
     {
       http: {
         method: "get",
-        path: "import",
-        cors: {
-          origin: "*",
-        },
+        path: "protected",
+        cors: true,
         authorizer: {
-          arn: "arn:aws:lambda:${aws:region}:${aws:accountId}:function:authorization-service-dev-basicAuthorizer",
+          name: "basicAuthorizer",
           resultTtlInSeconds: 0,
           identitySource: "method.request.header.Authorization",
           type: "token",

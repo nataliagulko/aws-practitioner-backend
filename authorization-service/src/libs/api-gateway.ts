@@ -18,10 +18,9 @@ export const formatJSONResponse = (response: Record<string, unknown>) => {
     statusCode: 200,
     body: JSON.stringify(response),
     headers: {
-      "Access-Control-Allow-Headers": "*",
+      "Access-Control-Allow-Headers": "Content-Type",
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "OPTIONS,POST,GET",
-      "Access-Control-Allow-Credentials": true,
     },
   };
 };
