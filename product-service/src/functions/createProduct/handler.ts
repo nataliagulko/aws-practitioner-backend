@@ -1,62 +1,59 @@
 import { formatJSONResponse } from "@libs/api-gateway";
 import { middyfy } from "@libs/lambda";
-import * as AWS from "aws-sdk";
-import Product from "@models/product";
-import Stock from "@models/stock";
 import { APIGatewayProxyEvent } from "aws-lambda";
-import { v4 } from "uuid";
 import { log } from "@utils/log";
 import { isValidJSON } from "@utils/parse";
+import { Client, ClientConfig } from "pg";
 
-const db = new AWS.DynamoDB.DocumentClient();
+const { PG_HOST, PG_PORT, PG_DATABASE, PG_USERNAME, PG_PASSWORD } = process.env;
 
-const putProduct = async (product: Product) =>
-  await db
-    .put({
-      TableName: process.env.PRODUCTS_TABLE_NAME,
-      Item: product,
-    })
-    .promise();
-
-const putStockProduct = async (stockProduct: Stock) =>
-  await db
-    .put({
-      TableName: process.env.STOCKS_TABLE_NAME,
-      Item: stockProduct,
-    })
-    .promise();
+const dbOptions: ClientConfig = {
+  host: PG_HOST,
+  port: Number(PG_PORT),
+  database: PG_DATABASE,
+  user: PG_USERNAME,
+  password: PG_PASSWORD,
+  ssl: {
+    rejectUnauthorized: false,
+  },
+  connectionTimeoutMillis: 5000,
+};
 
 const createProduct = async (event: APIGatewayProxyEvent) => {
   log(event);
+  const productsTableName = process.env.PRODUCTS_TABLE_NAME;
+  const stocksTableName = process.env.STOCKS_TABLE_NAME;
+  const client = new Client(dbOptions);
+
+  const body: any = isValidJSON(event.body)
+    ? JSON.parse(event.body)
+    : event.body;
+
+  const { title, description, price, count = 1 } = body || {};
+
+  await client.connect();
 
   try {
-    const productId = v4();
-    const body: any = isValidJSON(event.body)
-      ? event.body
-      : JSON.stringify(event.body);
+    const {
+      rows: [newProduct],
+    } = await client.query(`
+      INSERT INTO ${productsTableName} (title, description, price)
+      VALUES ('${title}', '${description}', '${price}')
+      RETURNING id
+    `);
 
-    const product: Product = {
-      id: productId,
-      title: body.title,
-      description: body.description,
-      price: body.price,
-    };
-    const stockProduct: Stock = {
-      product_id: productId,
-      count: body.count || 1,
-    };
+    const productId = newProduct.id;
 
-    await putProduct(product);
-    await putStockProduct(stockProduct);
+    await client.query(`
+      INSERT INTO ${stocksTableName} (product_id, count )
+      VALUES ('${productId}', ${count})
+    `);
 
     return formatJSONResponse({ id: productId });
   } catch (error) {
-    return formatJSONResponse(
-      {
-        message: error,
-      },
-      500
-    );
+    return formatJSONResponse({ message: error }, 500);
+  } finally {
+    await client.end();
   }
 };
 
